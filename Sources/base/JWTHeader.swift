@@ -13,12 +13,15 @@ public struct JWTHeader: Codable {
     // alg
     public var algorithm: String?
     // typ
-    public var type: String = "JWT"
+    public var type: String = "JOSE"
     // kid
     public var keyId: String?
-
-    public init(keyId: String? = nil) {
+    
+    public var jku: String?
+    
+    public init(keyId: String? = nil, jku: String? = nil) {
         self.keyId = keyId
+        self.jku = jku
     }
 
     public init(from decoder: Decoder) throws {
@@ -28,6 +31,7 @@ public struct JWTHeader: Codable {
         if let type = try container.decodeIfPresent(String.self, forKey: DynamicKey(stringValue: JWTHeaderCodingKeys.type.rawValue)) {
     			self.type = type
     		}
+        jku = try container.decodeIfPresent(String.self, forKey: DynamicKey(stringValue: JWTHeaderCodingKeys.jku.rawValue))
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -35,11 +39,13 @@ public struct JWTHeader: Codable {
         try container.encodeIfPresent(algorithm, forKey: DynamicKey(stringValue: JWTHeaderCodingKeys.algorithm.rawValue))
         try container.encodeIfPresent(keyId, forKey: DynamicKey(stringValue: JWTHeaderCodingKeys.keyId.rawValue))
         try container.encodeIfPresent(type, forKey: DynamicKey(stringValue: JWTHeaderCodingKeys.type.rawValue))
+        try container.encodeIfPresent(jku, forKey: DynamicKey(stringValue: JWTHeaderCodingKeys.jku.rawValue))
     }
 
     enum JWTHeaderCodingKeys: String {
         case algorithm = "alg"
         case keyId = "kid"
         case type = "typ"
+        case jku = "jku"
     }
 }
